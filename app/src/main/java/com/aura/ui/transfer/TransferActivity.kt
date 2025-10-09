@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.aura.databinding.ActivityTransferBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * The transfer activity for the app.
  */
+@AndroidEntryPoint
 class TransferActivity : AppCompatActivity()
 {
 

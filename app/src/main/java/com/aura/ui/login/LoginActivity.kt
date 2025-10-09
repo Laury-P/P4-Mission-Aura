@@ -6,10 +6,12 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.aura.databinding.ActivityLoginBinding
 import com.aura.ui.home.HomeActivity
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * The login activity for the app.
  */
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity()
 {
 
