@@ -2,11 +2,15 @@ package com.aura.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.aura.databinding.ActivityLoginBinding
 import com.aura.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 /**
  * The login activity for the app.
@@ -19,6 +23,7 @@ class LoginActivity : AppCompatActivity()
    * The binding for the login layout.
    */
   private lateinit var binding: ActivityLoginBinding
+  private val viewModel: LoginVewModel by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?)
   {
@@ -29,6 +34,21 @@ class LoginActivity : AppCompatActivity()
 
     val login = binding.login
     val loading = binding.loading
+    val identifier = binding.identifier
+    val password = binding.password
+
+
+    identifier.addTextChangedListener {
+      viewModel.onIdentifierChanged(it.toString())
+    }
+
+    password.addTextChangedListener {
+      viewModel.onPasswordChanged(it.toString())
+    }
+
+    lifecycleScope.launch{
+      viewModel.isLoginEnabled.collect{ login.isEnabled = it }
+    }
 
     login.setOnClickListener {
       loading.visibility = View.VISIBLE
@@ -38,6 +58,8 @@ class LoginActivity : AppCompatActivity()
 
       finish()
     }
+
   }
+
 
 }
