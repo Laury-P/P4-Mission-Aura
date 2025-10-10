@@ -9,4 +9,4 @@ class LoginResponse (
     val granted: Boolean,
 )
 
-// TODO: Add toDomainModel() if the API structure changes or becomes more complex
+// TODO: Add toDomainModel() if the API structure changes or becomes more complex --> when token a including fo example
