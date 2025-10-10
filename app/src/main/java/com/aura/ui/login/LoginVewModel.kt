@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import com.aura.data.repository.Result
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
@@ -22,31 +25,34 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository):
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
-    private val _isLoginEnabled = MutableStateFlow(false)
-    val isLoginEnabled: StateFlow<Boolean> = _isLoginEnabled.asStateFlow()
-
     private val _identifier = MutableStateFlow("")
     val identifier: StateFlow<String> = _identifier.asStateFlow()
 
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password.asStateFlow()
 
+    val isLoginEnabled = combine(
+        _identifier,
+        _password,
+        _loginState) { identifier, password, state ->
+        identifier.isNotEmpty() && password.isNotEmpty() && !state.loading
+    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
+
 
     fun onIdentifierChanged(newIdentifier: String){
         _identifier.value = newIdentifier
-        validateInputs()
     }
 
     fun onPasswordChanged(password: String){
         _password.value = password
-        validateInputs()
     }
 
-    private fun validateInputs(){
-        _isLoginEnabled.value = _identifier.value.isNotEmpty() && _password.value.isNotEmpty()
-    }
 
-    suspend fun login(identifier: String, password: String){
+    suspend fun login(){
+        val identifier = _identifier.value
+        val password = _password.value
+
         repository.login(identifier, password)
             .onEach { result ->
                 when(result){

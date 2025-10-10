@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.aura.databinding.ActivityLoginBinding
 import com.aura.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,16 +49,19 @@ class LoginActivity : AppCompatActivity() {
     }
 
     lifecycleScope.launch {
-      viewModel.isLoginEnabled.collect { login.isEnabled = it }
+      viewModel.isLoginEnabled.collect { login.isEnabled = it  }
     }
 
     login.setOnClickListener {
       lifecycleScope.launch {
-        viewModel.login(identifier.text.toString(), password.text.toString())
+        viewModel.login()
+
         viewModel.loginState.collect {
           loading.visibility = if (it.loading) View.VISIBLE else View.GONE
+
           if (it.loginResult == true) {
             Toast.makeText(this@LoginActivity, getString(R.string.login_success), Toast.LENGTH_SHORT).show()
+
             val intent = Intent(this@LoginActivity, HomeActivity::class.java)
             startActivity(intent)
           }
