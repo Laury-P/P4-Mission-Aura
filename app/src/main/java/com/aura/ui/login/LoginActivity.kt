@@ -69,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this@LoginActivity, getString(R.string.login_refused), Toast.LENGTH_SHORT).show()
           }
           if (it.errorMessage != null) {
-            Toast.makeText(this@LoginActivity, it.errorMessage, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, getString(it.errorMessage), Toast.LENGTH_SHORT).show()
           }
         }
       }
