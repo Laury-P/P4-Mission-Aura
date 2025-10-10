@@ -6,6 +6,7 @@ import com.aura.data.model.LoginResponse
 import com.aura.data.model.TransferRequest
 import com.aura.data.model.TransferResponse
 import com.aura.data.network.APIService
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
