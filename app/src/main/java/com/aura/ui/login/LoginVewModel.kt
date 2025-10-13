@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import com.aura.data.repository.Result
+import com.aura.data.session.SessionManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -58,6 +59,9 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository):
                 when(result){
                     is Result.Success -> _loginState.update{
                         val granted = result.data.granted
+                        if(granted){
+                            SessionManager.startSession(identifier)
+                        }
                         it.copy(
                             loginResult = granted,
                             loading = false,
