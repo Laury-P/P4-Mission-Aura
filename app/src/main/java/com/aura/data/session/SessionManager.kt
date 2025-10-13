@@ -27,7 +27,7 @@ object SessionManager {
      */
     fun startSession(identifier: String) {
         currentUserId = identifier
-        Log.d("SessionManager", "Session started for user $identifier")
+        //Log.d("SessionManager", "Session started for user $identifier")
     }
 
     /**
@@ -51,7 +51,7 @@ object SessionManager {
      */
     fun clearSession() {
         currentUserId = null
-        Log.d("SessionManager", "Session ended")
+        //Log.d("SessionManager", "Session ended")
     }
 
 }

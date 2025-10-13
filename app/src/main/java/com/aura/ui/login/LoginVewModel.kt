@@ -50,9 +50,7 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository):
     }
 
 
-    suspend fun login(){
-        val identifier = _identifier.value
-        val password = _password.value
+    suspend fun login(identifier : String = _identifier.value, password : String = _password.value){
 
         repository.login(identifier, password)
             .onEach { result ->
@@ -69,7 +67,7 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository):
                         )
                     }
                     is Result.Error -> _loginState.update{
-                        Log.e("LoginViewModel", "Erreur login: ${result.exception.message}")
+                        //Log.e("LoginViewModel", "Erreur login: ${result.exception.message}")
                         it.copy(
                             errorMessage = R.string.login_error,
                             loading = false,
