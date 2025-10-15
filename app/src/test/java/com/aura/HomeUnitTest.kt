@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import java.io.IOException
 
 class HomeRepositoryUnitTest {
     private lateinit var repository: AuraRepository
@@ -147,14 +148,15 @@ class HomeViewModelUnitTest {
      */
     @Test
     fun `failed getAccount should update state correctly`() = runTest {
+        val ioException = IOException("Network error")
         coEvery { repository.getAccount(any()) } returns flow {
             emit(Result.Loading)
-            emit(Result.Error(Exception("Network error")))
+            emit(Result.Error(ioException))
         }
         viewModel.getAccount()
         advanceUntilIdle()
         val state = viewModel.uiState.value
-        assertTrue(state.errorMessage != null)
+        assertEquals(state.errorMessage, R.string.error_network)
         assertTrue(!state.loading)
         assertEquals(0.0, state.balanceMain)
         assertTrue(state.accounts.isEmpty())

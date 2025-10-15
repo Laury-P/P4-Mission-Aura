@@ -71,7 +71,7 @@ class LoginActivity : AppCompatActivity() {
           }
           if (it.errorMessage != null) {
             Log.e("LoginActivity", "Erreur : ${it.errorMessage}")
-            Toast.makeText(this@LoginActivity, getString(R.string.login_error), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, getString(R.string.error_network), Toast.LENGTH_SHORT).show()
           }
         }
       }

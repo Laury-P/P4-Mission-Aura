@@ -26,6 +26,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 /**
  * Unit tests for the repository's method linked to the login screen.
@@ -205,10 +206,11 @@ class LoginViewModelUnitTest {
      * - The errorMessage should be the defaut error message.
      */
     @Test
-    fun `login should return error when api call fails`() = runTest {
+    fun `login should return error_network when api call fails`() = runTest {
+        val ioException = IOException("Network error")
         coEvery { repository.login(any(), any()) } returns flow{
             emit(Result.Loading)
-            emit(Result.Error(Exception("Network error")))
+            emit(Result.Error(ioException))
         }
 
         viewModel.login("identifier", "password")
@@ -218,7 +220,7 @@ class LoginViewModelUnitTest {
         val state = viewModel.loginState.value
         assertTrue(state.loginResult == null)
         assertFalse(state.loading)
-        assertEquals(R.string.login_error, state.errorMessage)
+        assertEquals(R.string.error_network, state.errorMessage)
     }
 
     /**
