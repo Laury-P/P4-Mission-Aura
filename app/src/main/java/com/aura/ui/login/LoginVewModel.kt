@@ -1,10 +1,8 @@
 package com.aura.ui.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aura.R
-import com.aura.data.model.LoginResponse
 import com.aura.data.repository.AuraRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import java.io.IOException
 
 @HiltViewModel
 class LoginVewModel @Inject constructor(private val repository: AuraRepository): ViewModel(){
@@ -67,9 +66,12 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository):
                         )
                     }
                     is Result.Error -> _loginState.update{
-                        //Log.e("LoginViewModel", "Erreur login: ${result.exception.message}")
+                        val message = when(result.exception){
+                            is IOException -> R.string.error_network
+                            else -> R.string.error_unknown
+                        }
                         it.copy(
-                            errorMessage = R.string.login_error,
+                            errorMessage = message,
                             loading = false,
                             loginResult = null,
                         )
@@ -78,6 +80,7 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository):
                         it.copy(
                             loading = true,
                             errorMessage = null,
+                            loginResult = null,
                         )
                     }
                 }
