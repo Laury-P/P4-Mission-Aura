@@ -2,6 +2,7 @@ package com.aura.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import android.view.View
 import android.widget.Toast
@@ -69,7 +70,8 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this@LoginActivity, getString(R.string.login_refused), Toast.LENGTH_SHORT).show()
           }
           if (it.errorMessage != null) {
-            Toast.makeText(this@LoginActivity, getString(it.errorMessage), Toast.LENGTH_SHORT).show()
+            Log.e("LoginActivity", "Erreur : ${it.errorMessage}")
+            Toast.makeText(this@LoginActivity, getString(R.string.login_error), Toast.LENGTH_SHORT).show()
           }
         }
       }

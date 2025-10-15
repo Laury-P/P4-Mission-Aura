@@ -67,9 +67,8 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository):
                         )
                     }
                     is Result.Error -> _loginState.update{
-                        //Log.e("LoginViewModel", "Erreur login: ${result.exception.message}")
                         it.copy(
-                            errorMessage = R.string.login_error,
+                            errorMessage = it.errorMessage,
                             loading = false,
                             loginResult = null,
                         )

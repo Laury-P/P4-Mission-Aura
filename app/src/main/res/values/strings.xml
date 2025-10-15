@@ -12,6 +12,7 @@
   <string name="balance">Balance :</string>
   <string name="disconnect">Déconnexion</string>
   <string name="bank_transfer">Faire un virement</string>
+  <string name="home_error">Erreur de connexions au serveur</string>
 
   <string name="prompt_recipient">Destinataire</string>
   <string name="prompt_amount">Montant</string>
