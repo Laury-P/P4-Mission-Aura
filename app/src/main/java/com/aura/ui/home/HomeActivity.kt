@@ -2,16 +2,23 @@ package com.aura.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.aura.R
+import com.aura.data.session.SessionManager
 import com.aura.databinding.ActivityHomeBinding
 import com.aura.ui.login.LoginActivity
 import com.aura.ui.transfer.TransferActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 /**
  * The home activity for the app.
@@ -24,6 +31,7 @@ class HomeActivity : AppCompatActivity()
    * The binding for the home layout.
    */
   private lateinit var binding: ActivityHomeBinding
+  private val viewModel: HomeViewModel by viewModels()
 
   /**
    * A callback for the result of starting the TransferActivity.
@@ -33,8 +41,7 @@ class HomeActivity : AppCompatActivity()
       //TODO
     }
 
-  override fun onCreate(savedInstanceState: Bundle?)
-  {
+  override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -42,13 +49,37 @@ class HomeActivity : AppCompatActivity()
 
     val balance = binding.balance
     val transfer = binding.transfer
+    val loading = binding.loading
+    val retryButton = binding.retryButton
 
-    balance.text = "2654,54€"
+    lifecycleScope.launch {
+      viewModel.getAccount()
+
+      viewModel.uiState.collect {
+        loading.visibility = if (it.loading) View.VISIBLE else View.GONE
+        retryButton.visibility = if (it.errorMessage != null) View.VISIBLE else View.GONE
+        if (it.accounts.isNotEmpty()) {
+          balance.text = it.balanceMain.toString()
+        }
+        if (it.errorMessage != null) {
+          Toast.makeText(this@HomeActivity, getString(it.errorMessage), Toast.LENGTH_SHORT)
+            .show()
+        }
+      }
+
+    }
+
+    retryButton.setOnClickListener {
+      lifecycleScope.launch {
+        viewModel.getAccount()
+      }
+    }
 
     transfer.setOnClickListener {
       startTransferActivityForResult.launch(Intent(this@HomeActivity, TransferActivity::class.java))
     }
   }
+
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean
   {
@@ -62,6 +93,7 @@ class HomeActivity : AppCompatActivity()
     {
       R.id.disconnect ->
       {
+        SessionManager.clearSession()
         startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
         finish()
         true

@@ -21,7 +21,7 @@ interface APIService {
     @GET("/accounts/{id}")
     suspend fun getAccount(
         @Query(value = "id") identifier: String,
-    ): AccountResponse
+    ): List<AccountResponse>
 
     @POST("/transfer")
     suspend fun transfer(

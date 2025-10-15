@@ -15,6 +15,7 @@ class AuraRepository @Inject constructor (private val apiService: APIService) {
 
     suspend fun login(identifier: String, password: String): Flow<Result<LoginResponse>> = flow {
         emit(Result.Loading)
+        //delay(2000)
 
         val loginRequest = LoginRequest(identifier, password)
 
@@ -26,9 +27,28 @@ class AuraRepository @Inject constructor (private val apiService: APIService) {
         }
     }
 
-    suspend fun getAccount(identifier: String): AccountResponse {
-        return apiService.getAccount(identifier)
-        //TODO: Add flow et Result
+    //var tryNumber = 0 // to simulate network error
+
+    suspend fun getAccount(identifier: String): Flow<Result<List<AccountResponse>>> = flow {
+        emit(Result.Loading)
+        try {
+            /**
+             * To simulate network error
+            delay(2000)
+            if ( tryNumber < 2 ) {
+                delay(2000)
+                emit(Result.Error(Exception("Erreur de connexion au serveur")))
+                tryNumber += 1
+            } else {
+                Place val account and emit here
+            }
+             */
+            val accounts = apiService.getAccount(identifier)
+            emit(Result.Success(accounts))
+        } catch (e: Exception) {
+            emit(Result.Error(e))
+        }
+
     }
 
     suspend fun transfer(senderId: Int, receiverId: Int, amount: Double): TransferResponse {
