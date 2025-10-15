@@ -2,6 +2,7 @@ package com.aura.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aura.R
 import com.aura.data.model.AccountResponse
 import com.aura.data.repository.AuraRepository
 import com.aura.data.session.SessionManager
@@ -14,6 +15,7 @@ import javax.inject.Inject
 import com.aura.data.repository.Result
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
+import java.io.IOException
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: AuraRepository) : ViewModel() {
@@ -39,16 +41,24 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
                         }
 
                         is Result.Error -> _uiState.update {
+                            val message = when(result.exception){
+                                is IOException -> R.string.error_network
+                                else -> R.string.error_unknown
+                            }
                             it.copy(
-                                errorMessage = result.exception.message,
-                                loading = false
+                                errorMessage = message,
+                                loading = false,
+                                accounts = emptyList(),
+                                balanceMain = 0.0
                             )
                         }
 
                         Result.Loading -> _uiState.update {
                             it.copy(
                                 loading = true,
-                                errorMessage = null
+                                errorMessage = null,
+                                accounts = emptyList(),
+                                balanceMain = 0.0
                             )
                         }
                     }
@@ -63,6 +73,6 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
 data class HomeUiState(
     val balanceMain: Double = 0.0,
     val accounts: List<AccountResponse> = emptyList(),
-    val errorMessage: String? = null,
-    val loading: Boolean = false
+    val errorMessage: Int? = null,
+    val loading: Boolean = false,
 )

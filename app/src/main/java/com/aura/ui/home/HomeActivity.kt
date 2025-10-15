@@ -50,19 +50,28 @@ class HomeActivity : AppCompatActivity()
     val balance = binding.balance
     val transfer = binding.transfer
     val loading = binding.loading
+    val retryButton = binding.retryButton
 
     lifecycleScope.launch {
       viewModel.getAccount()
+
       viewModel.uiState.collect {
         loading.visibility = if (it.loading) View.VISIBLE else View.GONE
+        retryButton.visibility = if (it.errorMessage != null) View.VISIBLE else View.GONE
         if (it.accounts.isNotEmpty()) {
           balance.text = it.balanceMain.toString()
         }
         if (it.errorMessage != null) {
-          Log.e("HomeActivity", "Erreur: ${it.errorMessage}")
-          Toast.makeText(this@HomeActivity, getString(R.string.home_error), Toast.LENGTH_SHORT)
+          Toast.makeText(this@HomeActivity, getString(it.errorMessage), Toast.LENGTH_SHORT)
             .show()
         }
+      }
+
+    }
+
+    retryButton.setOnClickListener {
+      lifecycleScope.launch {
+        viewModel.getAccount()
       }
     }
 

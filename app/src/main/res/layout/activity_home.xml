@@ -49,6 +49,18 @@
       app:layout_constraintVertical_bias="0.3"
       />
 
+  <Button
+      android:id="@+id/retryButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintStart_toStartOf="@id/balance"
+      app:layout_constraintEnd_toEndOf="@id/balance"
+      app:layout_constraintTop_toBottomOf="@id/balance"
+      android:visibility="gone"
+      android:text="@string/retry"
+      />
+
+
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/transfer"
     android:layout_width="wrap_content"

@@ -7,16 +7,19 @@
   <string name="action_sign_in">Connexion</string>
   <string name="login_refused">Identifiant ou mot de passe incorrect</string>
   <string name="login_success">Connexion réussie</string>
-  <string name="login_error">Erreur de connexion au serveur</string>
 
+  <!-- Home -->
   <string name="balance">Balance :</string>
   <string name="disconnect">Déconnexion</string>
   <string name="bank_transfer">Faire un virement</string>
-  <string name="home_error">Erreur de connexions au serveur</string>
+  <string name="retry">Réessayer</string>
 
+  <!-- Transfer -->
   <string name="prompt_recipient">Destinataire</string>
   <string name="prompt_amount">Montant</string>
   <string name="action_transfer">Faire le virement</string>
 
-
+  <!-- Error -->
+  <string name="error_network">Erreur de connexion au serveur</string>
+  <string name="error_unknown">Erreur inconnue</string>
 </resources>
