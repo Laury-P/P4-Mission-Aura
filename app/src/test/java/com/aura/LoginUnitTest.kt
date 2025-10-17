@@ -2,13 +2,13 @@ package com.aura
 
 import com.aura.data.model.LoginResponse
 import com.aura.data.repository.AuraRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import app.cash.turbine.test
 import com.aura.data.model.LoginRequest
 import com.aura.data.network.APIService
 import com.aura.data.repository.Result
 import com.aura.data.session.SessionManager
+import com.aura.ui.UIMessage
 import com.aura.ui.login.LoginVewModel
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -17,7 +17,6 @@ import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -145,7 +144,7 @@ class LoginViewModelUnitTest {
      * Acceptance criteria:
      * - The loginResult should be true
      * - The loading should be false
-     * - The errorMessage should be null
+     * - The uiMessage should be CREDENTIAL_ACCEPTED
      * - The current user session should be started with it's identifier recorder.
      */
     @Test
@@ -156,15 +155,22 @@ class LoginViewModelUnitTest {
             emit(Result.Success(loginResponse))
         }
 
-        viewModel.login("identifier", "password")
+        viewModel.uiMessageFlow.test {
 
-        advanceUntilIdle()
+            viewModel.login("identifier", "password")
 
-        val state = viewModel.loginState.value
-        assertTrue(state.loginResult == true)
-        assertFalse(state.loading)
-        assertNull(state.errorMessage)
-        assertEquals("identifier", SessionManager.getCurrentUserId())
+            advanceUntilIdle()
+
+            val state = viewModel.loginState.value
+            val message =  awaitItem()
+
+            assertTrue(state.loginResult == true)
+            assertFalse(state.loading)
+            assertEquals("identifier", SessionManager.getCurrentUserId())
+
+            assertEquals(UIMessage.CREDENTIAL_ACCEPTED, message)
+        }
+
 
     }
 
@@ -175,7 +181,7 @@ class LoginViewModelUnitTest {
      * Acceptance criteria:
      * - The loginResult should be false
      * - The loading should be false
-     * - The errorMessage should be null
+     * - The uiMessage should be CREDENTIAL_DENIED
      * - The current user session should not be started -> the identifier should remained null.
      */
     @Test
@@ -186,15 +192,22 @@ class LoginViewModelUnitTest {
             emit(Result.Success(loginResponse))
         }
 
-        viewModel.login("identifier", "password")
+        viewModel.uiMessageFlow.test {
+            viewModel.login("identifier", "password")
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val state = viewModel.loginState.value
-        assertTrue(state.loginResult == false)
-        assertFalse(state.loading)
-        assertNull(state.errorMessage)
-        assertNull(SessionManager.getCurrentUserId())
+            val state = viewModel.loginState.value
+            val message = awaitItem()
+
+            assertTrue(state.loginResult == false)
+            assertFalse(state.loading)
+            assertNull(SessionManager.getCurrentUserId())
+            assertEquals(UIMessage.CREDENTIAL_DENIED, message)
+
+            cancelAndConsumeRemainingEvents()
+        }
+
     }
 
     /**
@@ -203,7 +216,7 @@ class LoginViewModelUnitTest {
      * Acceptance criteria:
      * - The loginResult should be null
      * - The loading should be false
-     * - The errorMessage should be the defaut error message.
+     * - The uiMessage should be NETWORK.
      */
     @Test
     fun `login should return error_network when api call fails`() = runTest {
@@ -213,14 +226,20 @@ class LoginViewModelUnitTest {
             emit(Result.Error(ioException))
         }
 
-        viewModel.login("identifier", "password")
+        viewModel.uiMessageFlow.test {
+            viewModel.login("identifier", "password")
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val state = viewModel.loginState.value
-        assertTrue(state.loginResult == null)
-        assertFalse(state.loading)
-        assertEquals(R.string.error_network, state.errorMessage)
+            val state = viewModel.loginState.value
+            val message = awaitItem()
+
+            assertTrue(state.loginResult == null)
+            assertFalse(state.loading)
+            assertEquals(UIMessage.NETWORK, message)
+
+            cancelAndConsumeRemainingEvents()
+        }
     }
 
     /**
@@ -229,7 +248,7 @@ class LoginViewModelUnitTest {
      * Acceptance criteria:
      * - The loginResult should be null
      * - The loading should be true
-     * - The errorMessage should be null
+     * - The uiMessage should be null
      */
     @Test
     fun `login should return loading when login is in progress`() = runTest {
@@ -237,13 +256,20 @@ class LoginViewModelUnitTest {
             emit(Result.Loading)
             emit(Result.Loading)
         }
-        viewModel.login("identifier", "password")
-        advanceUntilIdle()
 
-        val state = viewModel.loginState.value
-        assertTrue(state.loginResult == null)
-        assertTrue(state.loading)
-        assertNull(state.errorMessage)
+        viewModel.uiMessageFlow.test {
+            viewModel.login("identifier", "password")
+
+            advanceUntilIdle()
+
+            val state = viewModel.loginState.value
+
+            assertTrue(state.loginResult == null)
+            assertTrue(state.loading)
+            expectNoEvents()
+
+            cancelAndConsumeRemainingEvents()
+        }
     }
 
 }

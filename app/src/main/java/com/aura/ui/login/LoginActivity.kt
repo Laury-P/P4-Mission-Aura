@@ -2,20 +2,16 @@ package com.aura.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import com.aura.databinding.ActivityLoginBinding
 import com.aura.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
-import com.aura.R
 import kotlinx.coroutines.launch
-import com.aura.data.repository.Result
 
 /**
  * The login activity for the app.
@@ -54,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            viewModel.uiMessage.collect {
+            viewModel.uiMessageFlow.collect {
                     Toast.makeText(
                         this@LoginActivity,
                         it.translatedMessage,

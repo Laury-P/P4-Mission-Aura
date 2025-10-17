@@ -25,8 +25,8 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
-    private val _uiMessage = MutableSharedFlow<UIMessage>()
-    val uiMessage = _uiMessage.asSharedFlow()
+    private val _uiMessageFlow = MutableSharedFlow<UIMessage>()
+    val uiMessageFlow = _uiMessageFlow.asSharedFlow()
 
 
     var identifier: String = ""
@@ -60,9 +60,9 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
                             val granted = result.data.granted
                             if (granted) {
                                 SessionManager.startSession(id)
-                                viewModelScope.launch { _uiMessage.emit(UIMessage.CREDENTIAL_ACCEPTED) }
+                                viewModelScope.launch { _uiMessageFlow.emit(UIMessage.CREDENTIAL_ACCEPTED) }
                             } else {
-                                viewModelScope.launch { _uiMessage.emit(UIMessage.CREDENTIAL_DENIED) }
+                                viewModelScope.launch { _uiMessageFlow.emit(UIMessage.CREDENTIAL_DENIED) }
                             }
                             it.copy(
                                 loginResult = granted,
@@ -73,8 +73,8 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
 
                         is Result.Error -> _loginState.update {
                             when (result.exception) {
-                                is IOException -> viewModelScope.launch {_uiMessage.emit( UIMessage.NETWORK)}
-                                else -> viewModelScope.launch {_uiMessage.emit( UIMessage.UNKNOWN)}
+                                is IOException -> viewModelScope.launch {_uiMessageFlow.emit( UIMessage.NETWORK)}
+                                else -> viewModelScope.launch {_uiMessageFlow.emit( UIMessage.UNKNOWN)}
                             }
                             it.copy(
                                 loading = false,
