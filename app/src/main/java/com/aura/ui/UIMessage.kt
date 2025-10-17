@@ -1,19 +1,21 @@
-package com.aura.ui.login
+package com.aura.ui
 
 import androidx.annotation.StringRes
 import com.aura.R
 
-enum class ErrorType {
+enum class UIMessage {
     NETWORK,
-    CREDENTIAL,
+    CREDENTIAL_DENIED,
+    CREDENTIAL_ACCEPTED,
     UNKNOWN;
 
 
     @get:StringRes
-    val translatedError: Int
+    val translatedMessage: Int
         get() = when (this) {
             NETWORK -> R.string.error_network
-            CREDENTIAL -> R.string.login_refused
+            CREDENTIAL_DENIED-> R.string.login_refused
+            CREDENTIAL_ACCEPTED -> R.string.login_success
             UNKNOWN -> R.string.error_unknown
         }
 }

@@ -53,6 +53,16 @@ class LoginActivity : AppCompatActivity() {
             viewModel.loginState.collect { login.isEnabled = it.isLoginEnabled }
         }
 
+        lifecycleScope.launch {
+            viewModel.uiMessage.collect {
+                    Toast.makeText(
+                        this@LoginActivity,
+                        it.translatedMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+            }
+        }
+
         login.setOnClickListener {
             lifecycleScope.launch {
                 viewModel.login()
@@ -61,28 +71,11 @@ class LoginActivity : AppCompatActivity() {
                     loading.visibility = if (it.loading) View.VISIBLE else View.GONE
 
                     if (it.loginResult == true) {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            getString(R.string.login_success),
-                            Toast.LENGTH_SHORT
-                        ).show()
-
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         startActivity(intent)
                     }
-                    if (it.errorMessage != null) {
-                        Log.e("LoginActivity", "Erreur : ${it.errorMessage}")
-                        Toast.makeText(
-                            this@LoginActivity,
-                            it.errorMessage.translatedError,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
             }
-
         }
-
-
     }
 }

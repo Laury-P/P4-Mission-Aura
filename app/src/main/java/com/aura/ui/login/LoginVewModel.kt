@@ -2,7 +2,6 @@ package com.aura.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aura.R
 import com.aura.data.repository.AuraRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,15 +10,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import com.aura.data.repository.Result
 import com.aura.data.session.SessionManager
+import com.aura.ui.UIMessage
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 @HiltViewModel
@@ -28,8 +25,8 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
-    private val _errorMessage = MutableSharedFlow<ErrorMessage>()
-    val errorMessage = _errorMessage.asSharedFlow()
+    private val _uiMessage = MutableSharedFlow<UIMessage>()
+    val uiMessage = _uiMessage.asSharedFlow()
 
 
     var identifier: String = ""
@@ -63,22 +60,23 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
                             val granted = result.data.granted
                             if (granted) {
                                 SessionManager.startSession(id)
+                                viewModelScope.launch { _uiMessage.emit(UIMessage.CREDENTIAL_ACCEPTED) }
+                            } else {
+                                viewModelScope.launch { _uiMessage.emit(UIMessage.CREDENTIAL_DENIED) }
                             }
                             it.copy(
                                 loginResult = granted,
                                 loading = false,
-                                errorMessage = if (granted) null else ErrorType.CREDENTIAL,
                                 isLoginEnabled = true,
                             )
                         }
 
                         is Result.Error -> _loginState.update {
-                            val message = when (result.exception) {
-                                is IOException -> ErrorType.NETWORK
-                                else -> ErrorType.UNKNOWN
+                            when (result.exception) {
+                                is IOException -> viewModelScope.launch {_uiMessage.emit( UIMessage.NETWORK)}
+                                else -> viewModelScope.launch {_uiMessage.emit( UIMessage.UNKNOWN)}
                             }
                             it.copy(
-                                errorMessage = message,
                                 loading = false,
                                 loginResult = null,
                                 isLoginEnabled = true,
@@ -88,7 +86,6 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
                         Result.Loading -> _loginState.update {
                             it.copy(
                                 loading = true,
-                                errorMessage = null,
                                 loginResult = null,
                                 isLoginEnabled = false
                             )
@@ -99,13 +96,9 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
     }
 
 }
-data class ErrorMessage (
-    val isError: Boolean = false,
-    val message: ErrorType? = null
-)
+
 data class LoginState(
     val loginResult: Boolean? = null,
     val loading: Boolean = false,
-    val errorMessage: ErrorType? = null,
     val isLoginEnabled: Boolean = false,
 )
