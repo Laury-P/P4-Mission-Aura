@@ -57,16 +57,17 @@ class HomeActivity : AppCompatActivity()
 
       viewModel.uiState.collect {
         loading.visibility = if (it.loading) View.VISIBLE else View.GONE
-        retryButton.visibility = if (it.errorMessage != null) View.VISIBLE else View.GONE
+        retryButton.visibility = if (it.isRetryVisible) View.VISIBLE else View.GONE
         if (it.accounts.isNotEmpty()) {
           balance.text = it.balanceMain.toString()
         }
-        if (it.errorMessage != null) {
-          Toast.makeText(this@HomeActivity, getString(it.errorMessage), Toast.LENGTH_SHORT)
-            .show()
-        }
       }
+    }
 
+    lifecycleScope.launch{
+      viewModel.uiMessageFlow.collect {
+        Toast.makeText(this@HomeActivity, it.translatedMessage, Toast.LENGTH_SHORT).show()
+      }
     }
 
     retryButton.setOnClickListener {

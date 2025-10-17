@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import com.aura.data.repository.Result
 import com.aura.data.session.SessionManager
+import com.aura.ui.UIMessage
 
 import com.aura.ui.home.HomeViewModel
 import io.mockk.every
@@ -114,7 +115,7 @@ class HomeViewModelUnitTest {
      * Acceptance criteria:
      * - The uiState should be updated with the list of account response
      * - the loading state should be false after the success state
-     * - The errorMessage should be null
+     * - The uiMessage shouldn't emit anything
      * - The balanceMain should be the balance of the main account
      */
     @Test
@@ -127,39 +128,53 @@ class HomeViewModelUnitTest {
             emit(Result.Loading)
             emit(Result.Success(fakeAccounts))
         }
-        viewModel.getAccount()
+        viewModel.uiMessageFlow.test {
+            viewModel.getAccount()
 
-        advanceUntilIdle()
-        val state = viewModel.uiState.value
-        assertTrue(state.accounts == fakeAccounts)
-        assertTrue(!state.loading)
-        assertTrue(state.errorMessage == null)
-        assertEquals(123.4, state.balanceMain)
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state.accounts == fakeAccounts)
+            assertTrue(!state.loading)
+            assertEquals(123.4, state.balanceMain)
+
+            expectNoEvents()
+            cancelAndConsumeRemainingEvents()
+        }
     }
 
     /**
      * Test of getAccount when the api call fails.
      *
      * Acceptance criteria:
-     * - The errorMessage should be null
      * - The loading state should be false after the error state
      * - The balanceMain should be 0.0
      * - The accounts should be empty
+     * - UiMessage should emit a NETWORK message
      */
     @Test
-    fun `failed getAccount should update state correctly`() = runTest {
+    fun `failed getAccount should update state correctly and emit NETWORK message`() = runTest {
         val ioException = IOException("Network error")
         coEvery { repository.getAccount(any()) } returns flow {
             emit(Result.Loading)
             emit(Result.Error(ioException))
         }
-        viewModel.getAccount()
-        advanceUntilIdle()
-        val state = viewModel.uiState.value
-        assertEquals(state.errorMessage, R.string.error_network)
-        assertTrue(!state.loading)
-        assertEquals(0.0, state.balanceMain)
-        assertTrue(state.accounts.isEmpty())
+        viewModel.uiMessageFlow.test {
+            viewModel.getAccount()
+
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            val message = awaitItem()
+
+            assertTrue(!state.loading)
+            assertEquals(0.0, state.balanceMain)
+            assertTrue(state.accounts.isEmpty())
+            assertEquals(UIMessage.NETWORK, message)
+
+            cancelAndConsumeRemainingEvents()
+        }
+
 
     }
 
