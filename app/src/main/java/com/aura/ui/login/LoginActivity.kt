@@ -23,61 +23,66 @@ import com.aura.data.repository.Result
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
-  /**
-   * The binding for the login layout.
-   */
-  private lateinit var binding: ActivityLoginBinding
-  private val viewModel: LoginVewModel by viewModels()
+    /**
+     * The binding for the login layout.
+     */
+    private lateinit var binding: ActivityLoginBinding
+    private val viewModel: LoginVewModel by viewModels()
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    binding = ActivityLoginBinding.inflate(layoutInflater)
-    setContentView(binding.root)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    val login = binding.login
-    val loading = binding.loading
-    val identifier = binding.identifier
-    val password = binding.password
+        val login = binding.login
+        val loading = binding.loading
+        val identifier = binding.identifier
+        val password = binding.password
 
 
-    identifier.addTextChangedListener {
-      viewModel.onIdentifierChanged(it.toString())
-    }
-
-    password.addTextChangedListener {
-      viewModel.onPasswordChanged(it.toString())
-    }
-
-    lifecycleScope.launch {
-      viewModel.isLoginEnabled.collect { login.isEnabled = it  }
-    }
-
-    login.setOnClickListener {
-      lifecycleScope.launch {
-        viewModel.login()
-
-        viewModel.loginState.collect {
-          loading.visibility = if (it.loading) View.VISIBLE else View.GONE
-
-          if (it.loginResult == true) {
-            Toast.makeText(this@LoginActivity, getString(R.string.login_success), Toast.LENGTH_SHORT).show()
-
-            val intent = Intent(this@LoginActivity, HomeActivity::class.java)
-            startActivity(intent)
-          }
-          if (it.loginResult == false) {
-            Toast.makeText(this@LoginActivity, getString(R.string.login_refused), Toast.LENGTH_SHORT).show()
-          }
-          if (it.errorMessage != null) {
-            Log.e("LoginActivity", "Erreur : ${it.errorMessage}")
-            Toast.makeText(this@LoginActivity, getString(R.string.error_network), Toast.LENGTH_SHORT).show()
-          }
+        identifier.addTextChangedListener {
+            viewModel.onIdentifierChanged(it.toString())
         }
-      }
+
+        password.addTextChangedListener {
+            viewModel.onPasswordChanged(it.toString())
+        }
+
+        lifecycleScope.launch {
+            viewModel.loginState.collect { login.isEnabled = it.isLoginEnabled }
+        }
+
+        login.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.login()
+
+                viewModel.loginState.collect {
+                    loading.visibility = if (it.loading) View.VISIBLE else View.GONE
+
+                    if (it.loginResult == true) {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            getString(R.string.login_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                    }
+                    if (it.errorMessage != null) {
+                        Log.e("LoginActivity", "Erreur : ${it.errorMessage}")
+                        Toast.makeText(
+                            this@LoginActivity,
+                            it.errorMessage.translatedError,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+
+        }
+
 
     }
-
-
-  }
 }
