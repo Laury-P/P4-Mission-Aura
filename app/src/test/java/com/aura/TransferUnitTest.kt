@@ -167,18 +167,22 @@ class TransferViewModelUnitTest {
             emit(Result.Success(transferResponse))
         }
 
-        viewModel.transfer("senderId", "receiverId", 100.0)
+        viewModel.uiMessageFlow.test {
+            viewModel.transfer("senderId", "receiverId", 100.0)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val state = viewModel.transferState.value
-        val message = viewModel.uiMessageFlow.value
+            val state = viewModel.transferState.value
+            val message = awaitItem()
 
-        assertTrue(!state.isLoading)
-        assertTrue(state.isTransferGranted == true)
+            assertTrue(!state.isLoading)
+            assertTrue(state.isTransferGranted == true)
 
-        assertEquals(UIMessage.TRANSFER_ACCEPTED, message.type)
-        assertTrue(message.errorMessage == null)
+            assertEquals(UIMessage.TRANSFER_ACCEPTED, message)
+
+            cancelAndConsumeRemainingEvents()
+        }
+
 
     }
 
@@ -200,18 +204,22 @@ class TransferViewModelUnitTest {
             emit(Result.Success(transferResponse))
         }
 
-        viewModel.transfer("senderId", "receiverId", 100.0)
+        viewModel.uiMessageFlow.test {
+            viewModel.transfer("senderId", "receiverId", 100.0)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val state = viewModel.transferState.value
-        val message = viewModel.uiMessageFlow.value
+            val state = viewModel.transferState.value
+            val message = awaitItem()
 
-        assertTrue(!state.isLoading)
-        assertTrue(state.isTransferGranted == false)
+            assertTrue(!state.isLoading)
+            assertTrue(state.isTransferGranted == false)
 
-        assertEquals(UIMessage.TRANSFER_DENIED, message.type)
-        assertTrue(message.errorMessage == null)
+            assertEquals(UIMessage.TRANSFER_DENIED, message)
+
+            cancelAndConsumeRemainingEvents()
+        }
+
     }
 
     /**
@@ -230,18 +238,22 @@ class TransferViewModelUnitTest {
             emit(Result.Loading)
             emit(Result.Error(IllegalArgumentException("amount can't be negative")))
         }
-        viewModel.transfer("senderId", "receiverId", -100.0)
+        viewModel.uiMessageFlow.test {
+            viewModel.transfer("senderId", "receiverId", -100.0)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val state = viewModel.transferState.value
-        val message = viewModel.uiMessageFlow.value
+            val state = viewModel.transferState.value
+            val message = awaitItem()
 
-        assertTrue(!state.isLoading)
-        assertTrue(state.isTransferGranted == null)
+            assertTrue(!state.isLoading)
+            assertTrue(state.isTransferGranted == null)
 
-        assertEquals(UIMessage.TRANSFER_ERROR, message.type)
-        assertEquals("amount can't be negative", message.errorMessage)
+            assertEquals(UIMessage.TRANSFER_ERROR, message)
+
+            cancelAndConsumeRemainingEvents()
+        }
+
 
     }
 
