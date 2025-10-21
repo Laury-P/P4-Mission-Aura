@@ -76,21 +76,22 @@ class LoginRepositoryUnitTest {
      * - The loading state should be emitted before the success state
      */
     @Test
-    fun `login should return success when credentials are Incorrect`() = runTest {
-        val loginResponse = LoginResponse(granted = false)
-        coEvery { apiService.login(any()) } returns loginResponse
+    fun `login should return success even when credentials are incorrect if the api call was successful`() =
+        runTest {
+            val loginResponse = LoginResponse(granted = false)
+            coEvery { apiService.login(any()) } returns loginResponse
 
-        repository.login("incorrectID", "incorrectPass").test {
-            val loadingItem = awaitItem()
-            assertTrue(loadingItem is Result.Loading)
+            repository.login("incorrectID", "incorrectPass").test {
+                val loadingItem = awaitItem()
+                assertTrue(loadingItem is Result.Loading)
 
-            val successItem = awaitItem()
-            assertTrue(successItem is Result.Success)
-            assertEquals(false, (successItem as Result.Success).data.granted)
+                val successItem = awaitItem()
+                assertTrue(successItem is Result.Success)
+                assertEquals(false, (successItem as Result.Success).data.granted)
 
-            awaitComplete()
+                awaitComplete()
+            }
         }
-    }
 
     /**
      * Test the login function of the repository when the api call fails.
@@ -150,7 +151,7 @@ class LoginViewModelUnitTest {
     @Test
     fun `login granted true should start session and update LoginState correctly`() = runTest {
         val loginResponse = LoginResponse(granted = true)
-        coEvery { repository.login(any(), any()) } returns flow{
+        coEvery { repository.login(any(), any()) } returns flow {
             emit(Result.Loading)
             emit(Result.Success(loginResponse))
         }
@@ -162,7 +163,7 @@ class LoginViewModelUnitTest {
             advanceUntilIdle()
 
             val state = viewModel.loginState.value
-            val message =  awaitItem()
+            val message = awaitItem()
 
             assertTrue(state.isLoginGranted == true)
             assertFalse(state.isLoading)
@@ -187,7 +188,7 @@ class LoginViewModelUnitTest {
     @Test
     fun `login granted false should not start session and update LoginState correctly`() = runTest {
         val loginResponse = LoginResponse(granted = false)
-        coEvery { repository.login(any(), any()) } returns flow{
+        coEvery { repository.login(any(), any()) } returns flow {
             emit(Result.Loading)
             emit(Result.Success(loginResponse))
         }
@@ -221,7 +222,7 @@ class LoginViewModelUnitTest {
     @Test
     fun `login should return error_network when api call fails`() = runTest {
         val ioException = IOException("Network error")
-        coEvery { repository.login(any(), any()) } returns flow{
+        coEvery { repository.login(any(), any()) } returns flow {
             emit(Result.Loading)
             emit(Result.Error(ioException))
         }
@@ -252,7 +253,7 @@ class LoginViewModelUnitTest {
      */
     @Test
     fun `login should return loading when login is in progress`() = runTest {
-        coEvery { repository.login(any(), any()) } returns flow{
+        coEvery { repository.login(any(), any()) } returns flow {
             emit(Result.Loading)
             emit(Result.Loading)
         }

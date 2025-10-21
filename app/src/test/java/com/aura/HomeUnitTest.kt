@@ -122,7 +122,7 @@ class HomeViewModelUnitTest {
     fun `successful getAccount should update state correctly`() = runTest {
         val fakeAccounts = listOf(
             AccountResponse(1, true, 123.4),
-            AccountResponse(2, false,567.8 )
+            AccountResponse(2, false, 567.8)
         )
         coEvery { repository.getAccount(any()) } returns flow {
             emit(Result.Loading)
@@ -185,10 +185,10 @@ class HomeViewModelUnitTest {
      * - The balanceMain should be the balance of the main account
      */
     @Test
-    fun `Negative account balance should also be displayed` () = runTest {
+    fun `negative account balance should also be displayed`() = runTest {
         val fakeAccounts = listOf(
             AccountResponse(1, true, -123.4),
-            AccountResponse(2, false,567.8 )
+            AccountResponse(2, false, 567.8)
         )
         coEvery { repository.getAccount(any()) } returns flow {
             emit(Result.Loading)
