@@ -172,7 +172,7 @@ class TransferViewModelUnitTest {
         advanceUntilIdle()
 
         val state = viewModel.transferState.value
-        val message = viewModel.uiMessage.value
+        val message = viewModel.uiMessageFlow.value
 
         assertTrue(!state.isLoading)
         assertTrue(state.isTransferGranted == true)
@@ -205,7 +205,7 @@ class TransferViewModelUnitTest {
         advanceUntilIdle()
 
         val state = viewModel.transferState.value
-        val message = viewModel.uiMessage.value
+        val message = viewModel.uiMessageFlow.value
 
         assertTrue(!state.isLoading)
         assertTrue(state.isTransferGranted == false)
@@ -235,7 +235,7 @@ class TransferViewModelUnitTest {
         advanceUntilIdle()
 
         val state = viewModel.transferState.value
-        val message = viewModel.uiMessage.value
+        val message = viewModel.uiMessageFlow.value
 
         assertTrue(!state.isLoading)
         assertTrue(state.isTransferGranted == null)

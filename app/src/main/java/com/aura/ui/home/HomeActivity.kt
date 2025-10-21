@@ -35,10 +35,8 @@ class HomeActivity : AppCompatActivity() {
      * A callback for the result of starting the TransferActivity.
      */
     private val startTransferActivityForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_OK) {
-                updateAccount()
-            }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            updateAccount()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {

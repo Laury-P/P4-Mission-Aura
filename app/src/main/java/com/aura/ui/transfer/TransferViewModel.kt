@@ -7,8 +7,10 @@ import com.aura.data.repository.Result
 import com.aura.data.session.SessionManager
 import com.aura.ui.UIMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -22,8 +24,8 @@ class TransferViewModel @Inject constructor(private val repository: AuraReposito
     private val _transferState = MutableStateFlow(TransferState())
     val transferState: StateFlow<TransferState> = _transferState.asStateFlow()
 
-    private val _uiMessage = MutableStateFlow(UIEvent())
-    val uiMessage = _uiMessage.asStateFlow()
+    private val _uiMessageFlow = MutableSharedFlow<UIMessage>()
+    val uiMessageFlow = _uiMessageFlow.asSharedFlow()
 
     private var recipient: String = ""
 
@@ -57,22 +59,14 @@ class TransferViewModel @Inject constructor(private val repository: AuraReposito
                         is Result.Error -> _transferState.update {
                             when (result.exception) {
                                 is IOException -> viewModelScope.launch {
-                                    _uiMessage.emit(
-                                        UIEvent(UIMessage.NETWORK)
-                                    )
-                                }
-
-                                is IllegalArgumentException -> viewModelScope.launch {
-                                    _uiMessage.emit(
-                                        UIEvent(UIMessage.TRANSFER_ERROR, result.exception.message)
+                                    _uiMessageFlow.emit(
+                                        UIMessage.NETWORK
                                     )
                                 }
 
                                 else -> viewModelScope.launch {
-                                    _uiMessage.emit(
-                                        UIEvent(
-                                            UIMessage.UNKNOWN
-                                        )
+                                    _uiMessageFlow.emit(
+                                        UIMessage.TRANSFER_ERROR
                                     )
                                 }
                             }
@@ -94,9 +88,9 @@ class TransferViewModel @Inject constructor(private val repository: AuraReposito
                         is Result.Success -> _transferState.update {
                             val granted = result.data.granted
                             if (granted) {
-                                viewModelScope.launch { _uiMessage.emit(UIEvent(UIMessage.TRANSFER_ACCEPTED)) }
+                                viewModelScope.launch { _uiMessageFlow.emit(UIMessage.TRANSFER_ACCEPTED) }
                             } else {
-                                viewModelScope.launch { _uiMessage.emit(UIEvent(UIMessage.TRANSFER_DENIED)) }
+                                viewModelScope.launch { _uiMessageFlow.emit(UIMessage.TRANSFER_DENIED) }
                             }
                             it.copy(
                                 isLoading = false,
@@ -110,11 +104,6 @@ class TransferViewModel @Inject constructor(private val repository: AuraReposito
         }
     }
 }
-
-data class UIEvent(
-    val type: UIMessage? = null,
-    val errorMessage: String? = null
-)
 
 data class TransferState(
     val isTransferEnabled: Boolean = false,

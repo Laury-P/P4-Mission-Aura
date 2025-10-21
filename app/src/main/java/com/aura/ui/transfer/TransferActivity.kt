@@ -2,7 +2,6 @@ package com.aura.ui.transfer
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -10,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.aura.databinding.ActivityTransferBinding
+import com.aura.utils.DecimalDigitsInputFilter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -34,6 +34,8 @@ class TransferActivity : AppCompatActivity() {
 
         val recipient = binding.recipient
         val amount = binding.amount
+        amount.filters = arrayOf(DecimalDigitsInputFilter(2))
+
         val transfer = binding.transfer
         val loading = binding.loading
 
@@ -50,22 +52,12 @@ class TransferActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            viewModel.uiMessage.collect {
-                Log.d("TransferActivity", "Message received: $it")
-                if (it.errorMessage != null) {
-                    Toast.makeText(
-                        this@TransferActivity,
-                        it.errorMessage.toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    if (it.type != null)
-                        Toast.makeText(
-                            this@TransferActivity,
-                            it.type.translatedMessage,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                }
+            viewModel.uiMessageFlow.collect {
+                Toast.makeText(
+                    this@TransferActivity,
+                    it.translatedMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
