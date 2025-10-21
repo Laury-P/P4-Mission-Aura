@@ -23,11 +23,13 @@ object APIModule {
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080")
-            .addConverterFactory(MoshiConverterFactory.create(
-                Moshi.Builder()
-                    .add(KotlinJsonAdapterFactory())
-                    .build()
-            ))
+            .addConverterFactory(
+                MoshiConverterFactory.create(
+                    Moshi.Builder()
+                        .add(KotlinJsonAdapterFactory())
+                        .build()
+                )
+            )
             .client(provideOkHttpClient())
             .build()
     }

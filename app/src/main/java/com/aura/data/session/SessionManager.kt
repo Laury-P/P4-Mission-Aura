@@ -1,7 +1,5 @@
 package com.aura.data.session
 
-import android.util.Log
-
 /**
  * This object is used to manage the session of the user.
  * This version only stock the user identifier.
@@ -12,13 +10,13 @@ import android.util.Log
  */
 object SessionManager {
 
-    private var currentUserId : String? =null
+    private var currentUserId: String? = null
 
     // TODO: Add a token when API expose it
 
-    //TODO: Add personal info such as first name, last name etc when API expose it
+    // TODO: Add personal info such as first name, last name etc when API expose it
 
-    //TODO: Add a datastore for local persistence
+    // TODO: Add a datastore for local persistence
 
     /**
      * Initialize the session after a succesful login
@@ -27,7 +25,6 @@ object SessionManager {
      */
     fun startSession(identifier: String) {
         currentUserId = identifier
-        //Log.d("SessionManager", "Session started for user $identifier")
     }
 
     /**
@@ -51,7 +48,7 @@ object SessionManager {
      */
     fun clearSession() {
         currentUserId = null
-        //Log.d("SessionManager", "Session ended")
+
     }
 
 }

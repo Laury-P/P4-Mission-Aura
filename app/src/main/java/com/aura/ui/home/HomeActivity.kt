@@ -2,7 +2,6 @@ package com.aura.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -38,7 +37,7 @@ class HomeActivity : AppCompatActivity() {
     private val startTransferActivityForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
-                lifecycleScope.launch { viewModel.getAccount() }
+                updateAccount()
             }
         }
 
@@ -53,9 +52,7 @@ class HomeActivity : AppCompatActivity() {
         val loading = binding.loading
         val retryButton = binding.retryButton
 
-        lifecycleScope.launch {
-            viewModel.getAccount()
-        }
+        updateAccount()
 
         lifecycleScope.launch {
             viewModel.uiState.collect {
@@ -74,18 +71,22 @@ class HomeActivity : AppCompatActivity() {
         }
 
         retryButton.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.getAccount()
-            }
+            updateAccount()
         }
 
         transfer.setOnClickListener {
             startTransferActivityForResult.launch(
                 Intent(
-                    this@HomeActivity,
-                    TransferActivity::class.java
+                    this@HomeActivity, TransferActivity::class.java
                 )
             )
+        }
+    }
+
+
+    private fun updateAccount() {
+        lifecycleScope.launch {
+            viewModel.getAccount()
         }
     }
 

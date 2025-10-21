@@ -2,7 +2,6 @@ package com.aura.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aura.R
 import com.aura.data.model.AccountResponse
 import com.aura.data.repository.AuraRepository
 import com.aura.data.session.SessionManager
@@ -37,9 +36,9 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
             repository.getAccount(identifier)
                 .onEach { result ->
                     when (result) {
-                        is Result.Success -> _uiState.update {
+                        is Result.Success -> _uiState.update { it ->
                             val accounts = result.data
-                            val mainAccount = accounts.find { it.mainAccount == true }
+                            val mainAccount = accounts.find { it.mainAccount }
                             it.copy(
                                 balanceMain = mainAccount?.balance ?: 0.0,
                                 accounts = accounts,
@@ -50,8 +49,13 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
 
                         is Result.Error -> _uiState.update {
                             when (result.exception) {
-                                is IOException -> viewModelScope.launch {_uiMessageFlow.emit( UIMessage.NETWORK)}
-                                else -> viewModelScope.launch {_uiMessageFlow.emit( UIMessage.UNKNOWN)}
+                                is IOException -> viewModelScope.launch {
+                                    _uiMessageFlow.emit(
+                                        UIMessage.NETWORK
+                                    )
+                                }
+
+                                else -> viewModelScope.launch { _uiMessageFlow.emit(UIMessage.UNKNOWN) }
                             }
                             it.copy(
                                 isRetryVisible = true,

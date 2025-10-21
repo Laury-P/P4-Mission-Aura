@@ -51,11 +51,11 @@ class LoginActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.uiMessageFlow.collect {
-                    Toast.makeText(
-                        this@LoginActivity,
-                        it.translatedMessage,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                Toast.makeText(
+                    this@LoginActivity,
+                    it.translatedMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 

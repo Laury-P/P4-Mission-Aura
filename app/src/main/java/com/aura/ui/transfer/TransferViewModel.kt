@@ -25,9 +25,9 @@ class TransferViewModel @Inject constructor(private val repository: AuraReposito
     private val _uiMessage = MutableStateFlow(UIEvent())
     val uiMessage = _uiMessage.asStateFlow()
 
-    var recipient: String = ""
+    private var recipient: String = ""
 
-    var amount: Double = 0.0
+    private var amount: Double = 0.0
 
     fun onRecipientChanged(newRecipient: String) {
         recipient = newRecipient
@@ -39,7 +39,7 @@ class TransferViewModel @Inject constructor(private val repository: AuraReposito
         updateTransfer()
     }
 
-    fun updateTransfer() {
+    private fun updateTransfer() {
         _transferState.update {
             it.copy(isTransferEnabled = (recipient.isNotBlank() && amount != 0.0 && !it.isLoading))
         }

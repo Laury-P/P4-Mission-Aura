@@ -44,55 +44,51 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
         updateLogin()
     }
 
-    fun updateLogin(){
+    private fun updateLogin() {
         _loginState.update {
-            it.copy(isLoginEnabled = (identifier.isNotBlank() && password.isNotBlank() && !it.isLoading) )
+            it.copy(isLoginEnabled = (identifier.isNotBlank() && password.isNotBlank() && !it.isLoading))
         }
     }
 
 
     suspend fun login(id: String = identifier, pass: String = password) {
 
-            repository.login(id, pass)
-                .onEach { result ->
-                    when (result) {
-                        is Result.Success -> _loginState.update {
-                            val granted = result.data.granted
-                            if (granted) {
-                                SessionManager.startSession(id)
-                                viewModelScope.launch { _uiMessageFlow.emit(UIMessage.CREDENTIAL_ACCEPTED) }
-                            } else {
-                                viewModelScope.launch { _uiMessageFlow.emit(UIMessage.CREDENTIAL_DENIED) }
-                            }
-                            it.copy(
-                                isLoginGranted = granted,
-                                isLoading = false,
-                                isLoginEnabled = true,
-                            )
+        repository.login(id, pass).onEach { result ->
+                when (result) {
+                    is Result.Success -> _loginState.update {
+                        val granted = result.data.granted
+                        if (granted) {
+                            SessionManager.startSession(id)
+                            viewModelScope.launch { _uiMessageFlow.emit(UIMessage.CREDENTIAL_ACCEPTED) }
+                        } else {
+                            viewModelScope.launch { _uiMessageFlow.emit(UIMessage.CREDENTIAL_DENIED) }
                         }
+                        it.copy(
+                            isLoginGranted = granted,
+                            isLoading = false,
+                            isLoginEnabled = true,
+                        )
+                    }
 
-                        is Result.Error -> _loginState.update {
-                            when (result.exception) {
-                                is IOException -> viewModelScope.launch {_uiMessageFlow.emit( UIMessage.NETWORK)}
-                                else -> viewModelScope.launch {_uiMessageFlow.emit( UIMessage.UNKNOWN)}
-                            }
-                            it.copy(
-                                isLoading = false,
-                                isLoginGranted = null,
-                                isLoginEnabled = true,
-                            )
+                    is Result.Error -> _loginState.update {
+                        when (result.exception) {
+                            is IOException -> viewModelScope.launch { _uiMessageFlow.emit(UIMessage.NETWORK) }
+                            else -> viewModelScope.launch { _uiMessageFlow.emit(UIMessage.UNKNOWN) }
                         }
+                        it.copy(
+                            isLoading = false,
+                            isLoginGranted = null,
+                            isLoginEnabled = true,
+                        )
+                    }
 
-                        Result.Loading -> _loginState.update {
-                            it.copy(
-                                isLoading = true,
-                                isLoginGranted = null,
-                                isLoginEnabled = false
-                            )
-                        }
+                    Result.Loading -> _loginState.update {
+                        it.copy(
+                            isLoading = true, isLoginGranted = null, isLoginEnabled = false
+                        )
                     }
                 }
-                .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 
 }
