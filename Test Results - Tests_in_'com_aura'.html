@@ -572,9 +572,9 @@ jQuery.cookie = function(name, value, options) {
     <body>
         <div id="container">
             <div id="header">
-                <div class="time" xmlns="">1.05 s</div>
+                <div class="time" xmlns="">1.18 s</div>
                 <h1>
-                    Tests in 'com.aura': <strong><span class="total" xmlns="http://www.w3.org/1999/xhtml">12 total, </span><span class="passed">12 passed</span></strong>
+                    Tests in 'com.aura': <strong><span class="total" xmlns="http://www.w3.org/1999/xhtml">18 total, </span><span class="passed">18 passed</span></strong>
                 </h1>
                 <div id="treecontrol">
                     <ul>
@@ -593,61 +593,61 @@ jQuery.cookie = function(name, value, options) {
                 <ul id="tree">
                     <li xmlns="" class="level top open">
                         <span><em class="time">
-                                <div class="time">892 ms</div>
+                                <div class="time">894 ms</div>
                             </em>HomeRepositoryUnitTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">862 ms</div>
+                                        <div class="time">866 ms</div>
                                     </em><em class="status">passed</em>getAccount should return error when api call fails</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">30 ms</div>
+                                        <div class="time">28 ms</div>
                                     </em><em class="status">passed</em>getAccount should return success when api call is successful</span>
                             </li>
                         </ul>
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">118 ms</div>
+                                <div class="time">146 ms</div>
                             </em>HomeViewModelUnitTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">75 ms</div>
-                                    </em><em class="status">passed</em>failed getAccount should update state correctly</span>
+                                        <div class="time">99 ms</div>
+                                    </em><em class="status">passed</em>failed getAccount should update state correctly and emit NETWORK message</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">22 ms</div>
-                                    </em><em class="status">passed</em>Negative account balance should also be displayed</span>
+                                        <div class="time">24 ms</div>
+                                    </em><em class="status">passed</em>negative account balance should also be displayed</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">21 ms</div>
+                                        <div class="time">23 ms</div>
                                     </em><em class="status">passed</em>successful getAccount should update state correctly</span>
                             </li>
                         </ul>
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">20 ms</div>
+                                <div class="time">23 ms</div>
                             </em>LoginRepositoryUnitTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">14 ms</div>
+                                        <div class="time">15 ms</div>
                                     </em><em class="status">passed</em>login should return success when credentials are correct</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
-                                    </em><em class="status">passed</em>login should return success when credentials are Incorrect</span>
+                                        <div class="time">4 ms</div>
+                                    </em><em class="status">passed</em>login should return success even when credentials are incorrect if the api call was successful</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
+                                        <div class="time">4 ms</div>
                                     </em><em class="status">passed</em>login should return error when api call fails</span>
                             </li>
                         </ul>
@@ -659,23 +659,67 @@ jQuery.cookie = function(name, value, options) {
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">9 ms</div>
+                                        <div class="time">5 ms</div>
                                     </em><em class="status">passed</em>login should return error_network when api call fails</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
+                                        <div class="time">4 ms</div>
                                     </em><em class="status">passed</em>login granted true should start session and update LoginState correctly</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">4 ms</div>
+                                        <div class="time">5 ms</div>
                                     </em><em class="status">passed</em>login should return loading when login is in progress</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
+                                        <div class="time">5 ms</div>
                                     </em><em class="status">passed</em>login granted false should not start session and update LoginState correctly</span>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="level top open">
+                        <span><em class="time">
+                                <div class="time">23 ms</div>
+                            </em>TransferRepositoryUnitTest</span>
+                        <ul>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">17 ms</div>
+                                    </em><em class="status">passed</em>transfer should return error when api call fails</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">3 ms</div>
+                                    </em><em class="status">passed</em>transfer should return success (granted = false) when transfer is refused by the api</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">3 ms</div>
+                                    </em><em class="status">passed</em>transfer should return success (granted = true) when transfer is successful</span>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="level top open">
+                        <span><em class="time">
+                                <div class="time">76 ms</div>
+                            </em>TransferViewModelUnitTest</span>
+                        <ul>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">25 ms</div>
+                                    </em><em class="status">passed</em>denied transfer should update state correctly</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">26 ms</div>
+                                    </em><em class="status">passed</em>successful transfer should update state correctly</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">25 ms</div>
+                                    </em><em class="status">passed</em>transfer error should update state correctly</span>
                             </li>
                         </ul>
                     </li>
@@ -683,7 +727,7 @@ jQuery.cookie = function(name, value, options) {
             </div>
         </div>
         <div id="footer">
-            <p>Generated by Android Studio on 15/10/2025 15:32</p>
+            <p>Generated by Android Studio on 21/10/2025 16:17</p>
         </div>
     </body>
 </html>

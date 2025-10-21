@@ -20,6 +20,7 @@ import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 
@@ -92,6 +93,7 @@ class HomeViewModelUnitTest {
     private lateinit var viewModel: HomeViewModel
     private lateinit var repository: AuraRepository
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -103,6 +105,7 @@ class HomeViewModelUnitTest {
 
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun tearDown() {
         Dispatchers.resetMain()
@@ -118,6 +121,7 @@ class HomeViewModelUnitTest {
      * - The uiMessage shouldn't emit anything
      * - The balanceMain should be the balance of the main account
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `successful getAccount should update state correctly`() = runTest {
         val fakeAccounts = listOf(
@@ -152,6 +156,7 @@ class HomeViewModelUnitTest {
      * - The accounts should be empty
      * - UiMessage should emit a NETWORK message
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `failed getAccount should update state correctly and emit NETWORK message`() = runTest {
         val ioException = IOException("Network error")
@@ -184,6 +189,7 @@ class HomeViewModelUnitTest {
      * Acceptance criteria:
      * - The balanceMain should be the balance of the main account
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `negative account balance should also be displayed`() = runTest {
         val fakeAccounts = listOf(

@@ -17,6 +17,7 @@ import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -126,6 +127,7 @@ class LoginViewModelUnitTest {
     private lateinit var viewModel: LoginVewModel
     private lateinit var repository: AuraRepository
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -133,6 +135,7 @@ class LoginViewModelUnitTest {
         viewModel = LoginVewModel(repository)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun tearDown() {
         Dispatchers.resetMain()
@@ -148,6 +151,7 @@ class LoginViewModelUnitTest {
      * - The uiMessage should be CREDENTIAL_ACCEPTED
      * - The current user session should be started with it's identifier recorder.
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `login granted true should start session and update LoginState correctly`() = runTest {
         val loginResponse = LoginResponse(granted = true)
@@ -185,6 +189,7 @@ class LoginViewModelUnitTest {
      * - The uiMessage should be CREDENTIAL_DENIED
      * - The current user session should not be started -> the identifier should remained null.
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `login granted false should not start session and update LoginState correctly`() = runTest {
         val loginResponse = LoginResponse(granted = false)
@@ -219,6 +224,7 @@ class LoginViewModelUnitTest {
      * - The loading should be false
      * - The uiMessage should be NETWORK.
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `login should return error_network when api call fails`() = runTest {
         val ioException = IOException("Network error")
@@ -251,6 +257,7 @@ class LoginViewModelUnitTest {
      * - The loading should be true
      * - The uiMessage should be null
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `login should return loading when login is in progress`() = runTest {
         coEvery { repository.login(any(), any()) } returns flow {
