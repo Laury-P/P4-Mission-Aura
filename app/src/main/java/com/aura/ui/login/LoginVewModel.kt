@@ -46,7 +46,7 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
 
     fun updateLogin(){
         _loginState.update {
-            it.copy(isLoginEnabled = (identifier.isNotBlank() && password.isNotBlank() && !it.loading) )
+            it.copy(isLoginEnabled = (identifier.isNotBlank() && password.isNotBlank() && !it.isLoading) )
         }
     }
 
@@ -65,8 +65,8 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
                                 viewModelScope.launch { _uiMessageFlow.emit(UIMessage.CREDENTIAL_DENIED) }
                             }
                             it.copy(
-                                loginResult = granted,
-                                loading = false,
+                                isLoginGranted = granted,
+                                isLoading = false,
                                 isLoginEnabled = true,
                             )
                         }
@@ -77,16 +77,16 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
                                 else -> viewModelScope.launch {_uiMessageFlow.emit( UIMessage.UNKNOWN)}
                             }
                             it.copy(
-                                loading = false,
-                                loginResult = null,
+                                isLoading = false,
+                                isLoginGranted = null,
                                 isLoginEnabled = true,
                             )
                         }
 
                         Result.Loading -> _loginState.update {
                             it.copy(
-                                loading = true,
-                                loginResult = null,
+                                isLoading = true,
+                                isLoginGranted = null,
                                 isLoginEnabled = false
                             )
                         }
@@ -98,7 +98,7 @@ class LoginVewModel @Inject constructor(private val repository: AuraRepository) 
 }
 
 data class LoginState(
-    val loginResult: Boolean? = null,
-    val loading: Boolean = false,
+    val isLoginGranted: Boolean? = null,
+    val isLoading: Boolean = false,
     val isLoginEnabled: Boolean = false,
 )

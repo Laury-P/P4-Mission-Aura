@@ -24,83 +24,88 @@ import kotlinx.coroutines.launch
  * The home activity for the app.
  */
 @AndroidEntryPoint
-class HomeActivity : AppCompatActivity()
-{
+class HomeActivity : AppCompatActivity() {
 
-  /**
-   * The binding for the home layout.
-   */
-  private lateinit var binding: ActivityHomeBinding
-  private val viewModel: HomeViewModel by viewModels()
+    /**
+     * The binding for the home layout.
+     */
+    private lateinit var binding: ActivityHomeBinding
+    private val viewModel: HomeViewModel by viewModels()
 
-  /**
-   * A callback for the result of starting the TransferActivity.
-   */
-  private val startTransferActivityForResult =
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-      //TODO
-    }
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    binding = ActivityHomeBinding.inflate(layoutInflater)
-    setContentView(binding.root)
-
-    val balance = binding.balance
-    val transfer = binding.transfer
-    val loading = binding.loading
-    val retryButton = binding.retryButton
-
-    lifecycleScope.launch {
-      viewModel.getAccount()
-
-      viewModel.uiState.collect {
-        loading.visibility = if (it.loading) View.VISIBLE else View.GONE
-        retryButton.visibility = if (it.isRetryVisible) View.VISIBLE else View.GONE
-        if (it.accounts.isNotEmpty()) {
-          balance.text = it.balanceMain.toString()
+    /**
+     * A callback for the result of starting the TransferActivity.
+     */
+    private val startTransferActivityForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                lifecycleScope.launch { viewModel.getAccount() }
+            }
         }
-      }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityHomeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val balance = binding.balance
+        val transfer = binding.transfer
+        val loading = binding.loading
+        val retryButton = binding.retryButton
+
+        lifecycleScope.launch {
+            viewModel.getAccount()
+        }
+
+        lifecycleScope.launch {
+            viewModel.uiState.collect {
+                loading.visibility = if (it.loading) View.VISIBLE else View.GONE
+                retryButton.visibility = if (it.isRetryVisible) View.VISIBLE else View.GONE
+                if (it.accounts.isNotEmpty()) {
+                    balance.text = it.balanceMain.toString()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.uiMessageFlow.collect {
+                Toast.makeText(this@HomeActivity, it.translatedMessage, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        retryButton.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.getAccount()
+            }
+        }
+
+        transfer.setOnClickListener {
+            startTransferActivityForResult.launch(
+                Intent(
+                    this@HomeActivity,
+                    TransferActivity::class.java
+                )
+            )
+        }
     }
 
-    lifecycleScope.launch{
-      viewModel.uiMessageFlow.collect {
-        Toast.makeText(this@HomeActivity, it.translatedMessage, Toast.LENGTH_SHORT).show()
-      }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+        return true
     }
 
-    retryButton.setOnClickListener {
-      lifecycleScope.launch {
-        viewModel.getAccount()
-      }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.disconnect -> {
+                SessionManager.clearSession()
+                startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
+                finish()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
-
-    transfer.setOnClickListener {
-      startTransferActivityForResult.launch(Intent(this@HomeActivity, TransferActivity::class.java))
-    }
-  }
-
-
-  override fun onCreateOptionsMenu(menu: Menu?): Boolean
-  {
-    menuInflater.inflate(R.menu.home_menu, menu)
-    return true
-  }
-
-  override fun onOptionsItemSelected(item: MenuItem): Boolean
-  {
-    return when (item.itemId)
-    {
-      R.id.disconnect ->
-      {
-        SessionManager.clearSession()
-        startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
-        finish()
-        true
-      }
-      else            -> super.onOptionsItemSelected(item)
-    }
-  }
 
 }

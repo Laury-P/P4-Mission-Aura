@@ -51,10 +51,16 @@ class AuraRepository @Inject constructor (private val apiService: APIService) {
 
     }
 
-    suspend fun transfer(senderId: Int, receiverId: Int, amount: Double): TransferResponse {
+    suspend fun transfer(senderId: String, receiverId: String, amount: Double): Flow<Result<TransferResponse>> = flow {
+        emit(Result.Loading)
+
         val transferRequest = TransferRequest(senderId, receiverId, amount)
-        return apiService.transfer(transferRequest)
-        //TODO: Add flow et Result
+        try{
+            val transferResponse = apiService.transfer(transferRequest)
+            emit(Result.Success(transferResponse))
+        } catch (e: Exception) {
+            emit(Result.Error(e))
+        }
 
     }
 

@@ -4,8 +4,8 @@ import com.squareup.moshi.Json
 
 data class TransferRequest (
     @Json(name = "sender")
-    val senderId: Int,
-    @Json(name = "receiver")
-    val receiverId: Int,
+    val senderId: String,
+    @Json(name = "recipient")
+    val receiverId: String,
     val amount: Double,
 )

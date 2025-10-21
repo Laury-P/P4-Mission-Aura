@@ -64,9 +64,9 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.login()
 
                 viewModel.loginState.collect {
-                    loading.visibility = if (it.loading) View.VISIBLE else View.GONE
+                    loading.visibility = if (it.isLoading) View.VISIBLE else View.GONE
 
-                    if (it.loginResult == true) {
+                    if (it.isLoginGranted == true) {
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         startActivity(intent)
                     }

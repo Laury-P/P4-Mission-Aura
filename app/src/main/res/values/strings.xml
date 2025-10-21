@@ -18,6 +18,12 @@
   <string name="prompt_recipient">Destinataire</string>
   <string name="prompt_amount">Montant</string>
   <string name="action_transfer">Faire le virement</string>
+  <string name="transfer_success">Virement effectué</string>
+  <string name="transfer_refused">Virement refusé: solde insuffisant ou mauvais compte sélectionné</string>
+  <string name="transfer_error">Virement impossible</string>
+
+
+
 
   <!-- Error -->
   <string name="error_network">Erreur de connexion au serveur</string>

@@ -164,8 +164,8 @@ class LoginViewModelUnitTest {
             val state = viewModel.loginState.value
             val message =  awaitItem()
 
-            assertTrue(state.loginResult == true)
-            assertFalse(state.loading)
+            assertTrue(state.isLoginGranted == true)
+            assertFalse(state.isLoading)
             assertEquals("identifier", SessionManager.getCurrentUserId())
 
             assertEquals(UIMessage.CREDENTIAL_ACCEPTED, message)
@@ -200,8 +200,8 @@ class LoginViewModelUnitTest {
             val state = viewModel.loginState.value
             val message = awaitItem()
 
-            assertTrue(state.loginResult == false)
-            assertFalse(state.loading)
+            assertTrue(state.isLoginGranted == false)
+            assertFalse(state.isLoading)
             assertNull(SessionManager.getCurrentUserId())
             assertEquals(UIMessage.CREDENTIAL_DENIED, message)
 
@@ -234,8 +234,8 @@ class LoginViewModelUnitTest {
             val state = viewModel.loginState.value
             val message = awaitItem()
 
-            assertTrue(state.loginResult == null)
-            assertFalse(state.loading)
+            assertTrue(state.isLoginGranted == null)
+            assertFalse(state.isLoading)
             assertEquals(UIMessage.NETWORK, message)
 
             cancelAndConsumeRemainingEvents()
@@ -264,8 +264,8 @@ class LoginViewModelUnitTest {
 
             val state = viewModel.loginState.value
 
-            assertTrue(state.loginResult == null)
-            assertTrue(state.loading)
+            assertTrue(state.isLoginGranted == null)
+            assertTrue(state.isLoading)
             expectNoEvents()
 
             cancelAndConsumeRemainingEvents()

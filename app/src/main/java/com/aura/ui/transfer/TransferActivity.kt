@@ -2,7 +2,9 @@ package com.aura.ui.transfer
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -40,22 +42,50 @@ class TransferActivity : AppCompatActivity() {
         }
 
         amount.addTextChangedListener {
-            viewModel.onAmountChanged(it.toString())
+            viewModel.onAmountChanged(it.toString().toDouble())
         }
-
 
         lifecycleScope.launch {
             viewModel.transferState.collect { transfer.isEnabled = it.isTransferEnabled }
         }
 
-
-        transfer.setOnClickListener {
-            loading.visibility = View.VISIBLE
-
-            setResult(Activity.RESULT_OK)
-            finish()
+        lifecycleScope.launch {
+            viewModel.uiMessage.collect {
+                Log.d("TransferActivity", "Message received: $it")
+                if (it.errorMessage != null) {
+                    Toast.makeText(
+                        this@TransferActivity,
+                        it.errorMessage.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    if (it.type != null)
+                        Toast.makeText(
+                            this@TransferActivity,
+                            it.type.translatedMessage,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                }
+            }
         }
 
+        lifecycleScope.launch {
+            viewModel.transferState.collect {
+                loading.visibility = if (it.isLoading) View.VISIBLE else View.GONE
+
+                if (it.isTransferGranted == true) {
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+            }
+        }
+
+
+        transfer.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.transfer()
+            }
+        }
 
     }
 
