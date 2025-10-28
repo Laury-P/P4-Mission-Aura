@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import java.math.BigDecimal
 
 /**
  * Unit tests for the repository's method linked to the transfer screen.
@@ -168,7 +169,7 @@ class TransferViewModelUnitTest {
         }
 
         viewModel.uiMessageFlow.test {
-            viewModel.transfer("senderId", "receiverId", 100.0)
+            viewModel.transfer("senderId", "receiverId", BigDecimal("100.0"))
 
             advanceUntilIdle()
 
@@ -205,7 +206,7 @@ class TransferViewModelUnitTest {
         }
 
         viewModel.uiMessageFlow.test {
-            viewModel.transfer("senderId", "receiverId", 100.0)
+            viewModel.transfer("senderId", "receiverId", BigDecimal("100.0"))
 
             advanceUntilIdle()
 
@@ -239,7 +240,7 @@ class TransferViewModelUnitTest {
             emit(Result.Error(IllegalArgumentException("amount can't be negative")))
         }
         viewModel.uiMessageFlow.test {
-            viewModel.transfer("senderId", "receiverId", -100.0)
+            viewModel.transfer("senderId", "receiverId", BigDecimal("-100.0"))
 
             advanceUntilIdle()
 

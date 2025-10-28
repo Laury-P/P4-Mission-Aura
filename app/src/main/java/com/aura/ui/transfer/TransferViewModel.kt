@@ -1,5 +1,6 @@
 package com.aura.ui.transfer
 
+import java.math.BigDecimal
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aura.data.repository.AuraRepository
@@ -29,31 +30,32 @@ class TransferViewModel @Inject constructor(private val repository: AuraReposito
 
     private var recipient: String = ""
 
-    private var amount: Double = 0.0
+    private var amount: BigDecimal = BigDecimal("0.0")
 
     fun onRecipientChanged(newRecipient: String) {
         recipient = newRecipient
         updateTransfer()
     }
 
-    fun onAmountChanged(newAmount: Double) {
+    fun onAmountChanged(newAmount: BigDecimal) {
         amount = newAmount
         updateTransfer()
     }
 
     private fun updateTransfer() {
         _transferState.update {
-            it.copy(isTransferEnabled = (recipient.isNotBlank() && amount != 0.0 && !it.isLoading))
+            it.copy(isTransferEnabled = (recipient.isNotBlank() && amount != BigDecimal("0.0") && !it.isLoading))
         }
     }
 
     suspend fun transfer(
         senderId: String? = SessionManager.getCurrentUserId(),
         receiverId: String = recipient,
-        transferAmount: Double = amount
+        transferAmount: BigDecimal = amount
     ) {
         if (senderId != null) {
-            repository.transfer(senderId, receiverId, transferAmount)
+            val amount = transferAmount.toDouble()
+            repository.transfer(senderId, receiverId, amount)
                 .onEach { result ->
                     when (result) {
                         is Result.Error -> _transferState.update {

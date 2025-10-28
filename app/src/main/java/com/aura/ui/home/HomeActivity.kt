@@ -1,12 +1,12 @@
 package com.aura.ui.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +18,9 @@ import com.aura.ui.login.LoginActivity
 import com.aura.ui.transfer.TransferActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.math.RoundingMode
+import java.math.BigDecimal
+
 
 /**
  * The home activity for the app.
@@ -39,6 +42,7 @@ class HomeActivity : AppCompatActivity() {
             updateAccount()
         }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,7 +61,8 @@ class HomeActivity : AppCompatActivity() {
                 loading.visibility = if (it.loading) View.VISIBLE else View.GONE
                 retryButton.visibility = if (it.isRetryVisible) View.VISIBLE else View.GONE
                 if (it.accounts.isNotEmpty()) {
-                    balance.text = it.balanceMain.toString()
+                    val formattedBalance = BigDecimal(it.balanceMain.toString()).setScale(2, RoundingMode.HALF_EVEN)
+                    balance.text = formattedBalance.toString()
                 }
             }
         }

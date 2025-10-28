@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import java.io.IOException
+import java.math.BigDecimal
 
 class HomeRepositoryUnitTest {
     private lateinit var repository: AuraRepository
@@ -140,7 +141,7 @@ class HomeViewModelUnitTest {
             val state = viewModel.uiState.value
             assertTrue(state.accounts == fakeAccounts)
             assertTrue(!state.loading)
-            assertEquals(123.4, state.balanceMain)
+            assertEquals(BigDecimal("123.4"), state.balanceMain)
 
             expectNoEvents()
             cancelAndConsumeRemainingEvents()
@@ -173,7 +174,7 @@ class HomeViewModelUnitTest {
             val message = awaitItem()
 
             assertTrue(!state.loading)
-            assertEquals(0.0, state.balanceMain)
+            assertEquals(BigDecimal("0.0"), state.balanceMain)
             assertTrue(state.accounts.isEmpty())
             assertEquals(UIMessage.NETWORK, message)
 
@@ -203,6 +204,6 @@ class HomeViewModelUnitTest {
         viewModel.getAccount()
         advanceUntilIdle()
         val state = viewModel.uiState.value
-        assertEquals(-123.4, state.balanceMain)
+        assertEquals(BigDecimal("-123.4"), state.balanceMain)
     }
 }
