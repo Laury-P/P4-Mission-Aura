@@ -12,6 +12,7 @@ import com.aura.databinding.ActivityTransferBinding
 import com.aura.utils.DecimalDigitsInputFilter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 /**
  * The transfer activity for the app.
@@ -44,7 +45,7 @@ class TransferActivity : AppCompatActivity() {
         }
 
         amount.addTextChangedListener {
-            viewModel.onAmountChanged(it.toString().toDouble())
+            viewModel.onAmountChanged(BigDecimal(it.toString()))
         }
 
         lifecycleScope.launch {

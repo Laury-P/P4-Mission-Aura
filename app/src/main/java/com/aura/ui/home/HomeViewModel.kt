@@ -1,5 +1,6 @@
 package com.aura.ui.home
 
+import java.math.BigDecimal
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aura.data.model.AccountResponse
@@ -40,7 +41,7 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
                             val accounts = result.data
                             val mainAccount = accounts.find { it.mainAccount }
                             it.copy(
-                                balanceMain = mainAccount?.balance ?: 0.0,
+                                balanceMain = BigDecimal(mainAccount?.balance.toString()),
                                 accounts = accounts,
                                 loading = false,
                                 isRetryVisible = false,
@@ -61,7 +62,7 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
                                 isRetryVisible = true,
                                 loading = false,
                                 accounts = emptyList(),
-                                balanceMain = 0.0
+                                balanceMain = BigDecimal("0.0")
                             )
                         }
 
@@ -70,7 +71,7 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
                                 loading = true,
                                 isRetryVisible = false,
                                 accounts = emptyList(),
-                                balanceMain = 0.0
+                                balanceMain = BigDecimal("0.0")
                             )
                         }
                     }
@@ -83,7 +84,7 @@ class HomeViewModel @Inject constructor(private val repository: AuraRepository) 
 }
 
 data class HomeUiState(
-    val balanceMain: Double = 0.0,
+    val balanceMain: BigDecimal = BigDecimal("0.0"),
     val accounts: List<AccountResponse> = emptyList(),
     val loading: Boolean = false,
     val isRetryVisible: Boolean = false
